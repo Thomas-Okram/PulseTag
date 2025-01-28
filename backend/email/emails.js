@@ -5,23 +5,17 @@ import {
   VERIFICATION_EMAIL_TEMPLATE,
 } from "./emailTemplates.js";
 
-/**
- * Send Verification Email
- * @param {string} email - The user's email address
- * @param {string} verificationToken - The verification code/token
- */
+// Send Verification Email
 export const sendVerificationEmail = async (email, verificationToken) => {
   try {
-    const emailTemplate = VERIFICATION_EMAIL_TEMPLATE.replace(
-      "{verificationCode}",
-      verificationToken
-    );
-
     const info = await transporter.sendMail({
-      from: `"${sender.name}" <${sender.email}>`,
-      to: email,
+      from: `"${sender.name}" <${sender.email}>`, // Sender name and email
+      to: email, // Recipient email
       subject: "Verify your email",
-      html: emailTemplate,
+      html: VERIFICATION_EMAIL_TEMPLATE.replace(
+        "{verificationCode}",
+        verificationToken
+      ),
     });
 
     console.log("✅ Verification email sent successfully", info.messageId);
@@ -31,24 +25,18 @@ export const sendVerificationEmail = async (email, verificationToken) => {
   }
 };
 
-/**
- * Send Welcome Email
- * @param {string} email - The user's email address
- * @param {string} name - The user's name
- */
+// Send Welcome Email
 export const sendWelcomeEmail = async (email, name) => {
   try {
-    const emailTemplate = `
-      <p>Hello ${name},</p>
-      <p>Welcome to PulseTag Technologies! We're thrilled to have you on board.</p>
-      <p>Best regards,<br>Team PulseTag Technologies</p>
-    `;
-
     const info = await transporter.sendMail({
       from: `"${sender.name}" <${sender.email}>`,
       to: email,
       subject: "Welcome to PulseTag Technologies",
-      html: emailTemplate,
+      html: `
+        <p>Hello ${name},</p>
+        <p>Welcome to PulseTag Technologies! We're thrilled to have you on board.</p>
+        <p>Best regards,<br>Team PulseTag Technologies</p>
+      `,
     });
 
     console.log("✅ Welcome email sent successfully", info.messageId);
@@ -58,21 +46,14 @@ export const sendWelcomeEmail = async (email, name) => {
   }
 };
 
-export const sendPasswordResetEmail = async (email, token) => {
+// Send Password Reset Email
+export const sendPasswordResetEmail = async (email, resetURL) => {
   try {
-    // ✅ Construct the correct reset password link
-    const resetURL = `https://pulsetag-technologies.onrender.com/reset-password/${token}`;
-
-    console.log("🔹 Sending Password Reset Email to:", email);
-    console.log("🔹 Reset URL:", resetURL); // ✅ Debugging log to check the reset URL
-
-    const emailTemplate = PASSWORD_RESET_REQUEST_TEMPLATE(resetURL);
-
     const info = await transporter.sendMail({
       from: `"${sender.name}" <${sender.email}>`,
       to: email,
       subject: "Reset your password",
-      html: emailTemplate,
+      html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetURL),
     });
 
     console.log("✅ Password reset email sent successfully", info.messageId);
@@ -82,6 +63,7 @@ export const sendPasswordResetEmail = async (email, token) => {
   }
 };
 
+// Send Password Reset Success Email
 export const sendResetSuccessEmail = async (email) => {
   try {
     const info = await transporter.sendMail({
