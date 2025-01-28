@@ -19,7 +19,6 @@ export const signup = async (req, res) => {
     }
 
     const userAlreadyExists = await User.findOne({ email });
-    console.log("userAlreadyExists", userAlreadyExists);
 
     if (userAlreadyExists) {
       return res
@@ -42,7 +41,7 @@ export const signup = async (req, res) => {
 
     await user.save();
 
-    // jwt
+    // Generate JWT and set cookie
     generateTokenAndSetCookie(res, user._id);
 
     await sendVerificationEmail(user.email, verificationToken);
@@ -56,6 +55,7 @@ export const signup = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("Error in signup:", error);
     res.status(400).json({ success: false, message: error.message });
   }
 };
@@ -91,7 +91,7 @@ export const verifyEmail = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("error in verifyEmail ", error);
+    console.error("Error in verifyEmail:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -126,7 +126,7 @@ export const login = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Error in login ", error);
+    console.error("Error in login:", error);
     res.status(400).json({ success: false, message: error.message });
   }
 };
@@ -156,18 +156,21 @@ export const forgotPassword = async (req, res) => {
 
     await user.save();
 
-    // send email
-    await sendPasswordResetEmail(
-      user.email,
-      `${process.env.CLIENT_URL}/reset-password/${resetToken}`
-    );
+    // ✅ Construct the correct reset URL only once!
+    const resetURL = `https://pulsetag-technologies.onrender.com/reset-password/${resetToken}`;
+
+    console.log("🔹 Sending Password Reset Email to:", user.email);
+    console.log("🔹 Reset URL:", resetURL); // 🔥 This should be correct now!
+
+    // ✅ Pass only the generated URL
+    await sendPasswordResetEmail(user.email, resetURL);
 
     res.status(200).json({
       success: true,
       message: "Password reset link sent to your email",
     });
   } catch (error) {
-    console.log("Error in forgotPassword ", error);
+    console.error("Error in forgotPassword:", error);
     res.status(400).json({ success: false, message: error.message });
   }
 };
@@ -202,7 +205,7 @@ export const resetPassword = async (req, res) => {
       .status(200)
       .json({ success: true, message: "Password reset successfully" });
   } catch (error) {
-    console.error("Error in resetPassword: ", error);
+    console.error("Error in resetPassword:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -218,7 +221,7 @@ export const checkAuth = async (req, res) => {
 
     res.status(200).json({ success: true, user });
   } catch (error) {
-    console.log("Error in checkAuth ", error);
+    console.error("Error in checkAuth:", error);
     res.status(400).json({ success: false, message: error.message });
   }
 };

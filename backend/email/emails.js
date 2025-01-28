@@ -9,13 +9,10 @@ import {
 export const sendVerificationEmail = async (email, verificationToken) => {
   try {
     const info = await transporter.sendMail({
-      from: `"${sender.name}" <${sender.email}>`, // Sender name and email
-      to: email, // Recipient email
-      subject: "Verify your email",
-      html: VERIFICATION_EMAIL_TEMPLATE.replace(
-        "{verificationCode}",
-        verificationToken
-      ),
+      from: `"${sender.name}" <${sender.email}>`,
+      to: email,
+      subject: "Reset your password",
+      html: PASSWORD_RESET_REQUEST_TEMPLATE(resetURL), // Directly pass resetURL
     });
 
     console.log("✅ Verification email sent successfully", info.messageId);
@@ -47,22 +44,18 @@ export const sendWelcomeEmail = async (email, name) => {
 };
 
 // Send Password Reset Email
-export const sendPasswordResetEmail = async (email, token) => {
+export const sendPasswordResetEmail = async (email, resetURL) => {
   try {
-    // ✅ Construct the reset URL
-    const resetURL = `https://pulsetag-technologies.onrender.com/reset-password/${token}`;
+    console.log("📧 Sending Reset Email to:", email);
+    console.log("🔗 Reset URL:", resetURL);
 
-    console.log("🔹 Sending Password Reset Email to:", email);
-    console.log("🔹 Reset URL:", resetURL); // Debugging log to check the reset URL
-
-    // ✅ Call the template function with the resetURL
-    const emailTemplate = PASSWORD_RESET_REQUEST_TEMPLATE(resetURL);
+    const emailTemplate = PASSWORD_RESET_REQUEST_TEMPLATE(resetURL); // ✅ Fix: use function, no replace
 
     const info = await transporter.sendMail({
       from: `"${sender.name}" <${sender.email}>`,
       to: email,
       subject: "Reset your password",
-      html: emailTemplate,
+      html: emailTemplate, // ✅ Fixed template
     });
 
     console.log("✅ Password reset email sent successfully", info.messageId);
