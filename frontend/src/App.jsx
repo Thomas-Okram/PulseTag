@@ -110,10 +110,14 @@ function App() {
             </RedirectAuthenticatedUser>
           }
         />
-        {/* Reset password route accessible without authentication */}
-        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-        {/* Catch all other routes */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route
+          path="/reset-password/:token"
+          element={
+            <RedirectAuthenticatedUser>
+              <ResetPasswordPage />
+            </RedirectAuthenticatedUser>
+          }
+        />
       </Routes>
 
       <Toaster />
