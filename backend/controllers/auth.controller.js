@@ -188,7 +188,7 @@ export const resetPassword = async (req, res) => {
         .json({ success: false, message: "Invalid or expired reset token" });
     }
 
-    // update password
+    // Hash the new password
     const hashedPassword = await bcryptjs.hash(password, 10);
 
     user.password = hashedPassword;
@@ -200,10 +200,10 @@ export const resetPassword = async (req, res) => {
 
     res
       .status(200)
-      .json({ success: true, message: "Password reset successful" });
+      .json({ success: true, message: "Password reset successfully" });
   } catch (error) {
-    console.log("Error in resetPassword ", error);
-    res.status(400).json({ success: false, message: error.message });
+    console.error("Error in resetPassword: ", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
