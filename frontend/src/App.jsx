@@ -29,15 +29,10 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-// Redirect authenticated users to the home page, except for reset password
 const RedirectAuthenticatedUser = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
 
-  // Allow access to `/reset-password/:token` even if authenticated
-  const isResetPasswordRoute =
-    window.location.pathname.startsWith("/reset-password");
-
-  if (isAuthenticated && user?.isVerified && !isResetPasswordRoute) {
+  if (isAuthenticated && user?.isVerified) {
     return <Navigate to="/" replace />;
   }
 
@@ -81,6 +76,7 @@ function App() {
       />
 
       <Routes>
+        {/* Protected routes for authenticated users */}
         <Route
           path="/"
           element={
@@ -114,10 +110,12 @@ function App() {
             </RedirectAuthenticatedUser>
           }
         />
+        {/* Reset password route accessible without authentication */}
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         {/* Catch all other routes */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+
       <Toaster />
     </div>
   );
