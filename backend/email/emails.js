@@ -47,13 +47,22 @@ export const sendWelcomeEmail = async (email, name) => {
 };
 
 // Send Password Reset Email
-export const sendPasswordResetEmail = async (email, resetURL) => {
+export const sendPasswordResetEmail = async (email, token) => {
   try {
+    // ✅ Construct the reset URL
+    const resetURL = `https://pulsetag-technologies.onrender.com/reset-password/${token}`;
+
+    console.log("🔹 Sending Password Reset Email to:", email);
+    console.log("🔹 Reset URL:", resetURL); // Debugging log to check the reset URL
+
+    // ✅ Call the template function with the resetURL
+    const emailTemplate = PASSWORD_RESET_REQUEST_TEMPLATE(resetURL);
+
     const info = await transporter.sendMail({
       from: `"${sender.name}" <${sender.email}>`,
       to: email,
       subject: "Reset your password",
-      html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetURL),
+      html: emailTemplate,
     });
 
     console.log("✅ Password reset email sent successfully", info.messageId);
