@@ -110,14 +110,7 @@ function App() {
             </RedirectAuthenticatedUser>
           }
         />
-        <Route
-          path="/reset-password/:token"
-          element={
-            <RedirectAuthenticatedUser>
-              <ResetPasswordPage />
-            </RedirectAuthenticatedUser>
-          }
-        />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
       </Routes>
 
       <Toaster />
