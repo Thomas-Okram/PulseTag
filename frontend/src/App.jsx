@@ -14,7 +14,7 @@ import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/authStore";
 import { useEffect } from "react";
 
-// protect routes that require authentication
+// Protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
 
@@ -29,11 +29,15 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-// redirect authenticated users to the home page
+// Redirect authenticated users to the home page, except for reset password
 const RedirectAuthenticatedUser = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
 
-  if (isAuthenticated && user?.isVerified) {
+  // Allow access to `/reset-password/:token` even if authenticated
+  const isResetPasswordRoute =
+    window.location.pathname.startsWith("/reset-password");
+
+  if (isAuthenticated && user?.isVerified && !isResetPasswordRoute) {
     return <Navigate to="/" replace />;
   }
 
@@ -110,16 +114,8 @@ function App() {
             </RedirectAuthenticatedUser>
           }
         />
-
-        <Route
-          path="/reset-password/:token"
-          element={
-            <RedirectAuthenticatedUser>
-              <ResetPasswordPage />
-            </RedirectAuthenticatedUser>
-          }
-        />
-        {/* catch all routes */}
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+        {/* Catch all other routes */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <Toaster />
