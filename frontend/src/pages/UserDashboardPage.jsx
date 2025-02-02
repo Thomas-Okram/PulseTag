@@ -298,7 +298,11 @@ END:VCARD
     return <p className="text-center text-white mt-10">Loading profile...</p>;
   }
 
-  const isOwner = isAuthenticated && user?._id === profileId;
+  const isOwner = isAuthenticated && (!profileId || user?._id === profileId);
+
+  console.log("Profile ID from URL:", profileId);
+  console.log("Logged-in User ID:", user?._id);
+  console.log("Is Owner:", isOwner);
 
   if (!profile && !loading) {
     return (

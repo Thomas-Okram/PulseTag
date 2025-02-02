@@ -41,18 +41,15 @@ export const signup = async (req, res) => {
 
     await user.save();
 
-    // Generate JWT and set cookie
-    generateTokenAndSetCookie(res, user._id);
+    const token = generateTokenAndSetCookie(res, user._id);
 
     await sendVerificationEmail(user.email, verificationToken);
 
     res.status(201).json({
       success: true,
       message: "User created successfully",
-      user: {
-        ...user._doc,
-        password: undefined,
-      },
+      user: { ...user._doc, password: undefined },
+      token,
     });
   } catch (error) {
     console.error("Error in signup:", error);
@@ -62,6 +59,7 @@ export const signup = async (req, res) => {
 
 export const verifyEmail = async (req, res) => {
   const { code } = req.body;
+
   try {
     const user = await User.findOne({
       verificationToken: code,
@@ -69,10 +67,12 @@ export const verifyEmail = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid or expired verification code",
-      });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Invalid or expired verification code",
+        });
     }
 
     user.isVerified = true;
@@ -82,13 +82,13 @@ export const verifyEmail = async (req, res) => {
 
     await sendWelcomeEmail(user.email, user.name);
 
+    const token = generateTokenAndSetCookie(res, user._id);
+
     res.status(200).json({
       success: true,
       message: "Email verified successfully",
-      user: {
-        ...user._doc,
-        password: undefined,
-      },
+      user: { ...user._doc, password: undefined },
+      token,
     });
   } catch (error) {
     console.error("Error in verifyEmail:", error);
@@ -98,13 +98,16 @@ export const verifyEmail = async (req, res) => {
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
+
   try {
     const user = await User.findOne({ email });
+
     if (!user) {
       return res
         .status(400)
         .json({ success: false, message: "Invalid credentials" });
     }
+
     const isPasswordValid = await bcryptjs.compare(password, user.password);
     if (!isPasswordValid) {
       return res
@@ -112,7 +115,7 @@ export const login = async (req, res) => {
         .json({ success: false, message: "Invalid credentials" });
     }
 
-    generateTokenAndSetCookie(res, user._id);
+    const token = generateTokenAndSetCookie(res, user._id);
 
     user.lastLogin = new Date();
     await user.save();
@@ -120,10 +123,8 @@ export const login = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Logged in successfully",
-      user: {
-        ...user._doc,
-        password: undefined,
-      },
+      user: { ...user._doc, password: undefined },
+      token,
     });
   } catch (error) {
     console.error("Error in login:", error);
@@ -138,6 +139,7 @@ export const logout = async (req, res) => {
 
 export const forgotPassword = async (req, res) => {
   const { email } = req.body;
+
   try {
     const user = await User.findOne({ email });
 
@@ -147,7 +149,6 @@ export const forgotPassword = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
-    // Generate reset token
     const resetToken = crypto.randomBytes(20).toString("hex");
     const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000; // 1 hour
 
@@ -156,19 +157,19 @@ export const forgotPassword = async (req, res) => {
 
     await user.save();
 
-    // ✅ Construct the correct reset URL only once!
     const resetURL = `https://pulsetag-technologies.onrender.com/reset-password/${resetToken}`;
 
     console.log("🔹 Sending Password Reset Email to:", user.email);
-    console.log("🔹 Reset URL:", resetURL); // 🔥 This should be correct now!
+    console.log("🔹 Reset URL:", resetURL);
 
-    // ✅ Pass only the generated URL
     await sendPasswordResetEmail(user.email, resetURL);
 
-    res.status(200).json({
-      success: true,
-      message: "Password reset link sent to your email",
-    });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Password reset link sent to your email",
+      });
   } catch (error) {
     console.error("Error in forgotPassword:", error);
     res.status(400).json({ success: false, message: error.message });
@@ -176,10 +177,10 @@ export const forgotPassword = async (req, res) => {
 };
 
 export const resetPassword = async (req, res) => {
-  try {
-    const { token } = req.params;
-    const { password } = req.body;
+  const { token } = req.params;
+  const { password } = req.body;
 
+  try {
     const user = await User.findOne({
       resetPasswordToken: token,
       resetPasswordExpiresAt: { $gt: Date.now() },
@@ -191,7 +192,6 @@ export const resetPassword = async (req, res) => {
         .json({ success: false, message: "Invalid or expired reset token" });
     }
 
-    // Hash the new password
     const hashedPassword = await bcryptjs.hash(password, 10);
 
     user.password = hashedPassword;
@@ -213,13 +213,20 @@ export const resetPassword = async (req, res) => {
 export const checkAuth = async (req, res) => {
   try {
     const user = await User.findById(req.userId).select("-password");
+
     if (!user) {
       return res
         .status(400)
         .json({ success: false, message: "User not found" });
     }
 
-    res.status(200).json({ success: true, user });
+    const token = generateTokenAndSetCookie(res, user._id);
+
+    res.status(200).json({
+      success: true,
+      user: { ...user._doc },
+      token,
+    });
   } catch (error) {
     console.error("Error in checkAuth:", error);
     res.status(400).json({ success: false, message: error.message });
