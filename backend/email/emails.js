@@ -6,13 +6,20 @@ import {
 } from "./emailTemplates.js";
 
 // Send Verification Email
+// Send Verification Email
 export const sendVerificationEmail = async (email, verificationToken) => {
   try {
+    if (!verificationToken) {
+      throw new Error("Verification token is not provided");
+    }
+
+    const verificationLink = `https://yourwebsite.com/verify-email?token=${verificationToken}`; // Generate verification URL
+
     const info = await transporter.sendMail({
       from: `"${sender.name}" <${sender.email}>`,
       to: email,
-      subject: "Reset your password",
-      html: PASSWORD_RESET_REQUEST_TEMPLATE(resetURL), // Directly pass resetURL
+      subject: "Verify Your Email",
+      html: VERIFICATION_EMAIL_TEMPLATE(verificationToken), // ✅ Use correct verification template
     });
 
     console.log("✅ Verification email sent successfully", info.messageId);

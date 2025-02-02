@@ -7,6 +7,7 @@ import EmailVerificationPage from "./pages/EmailVerificationPage";
 import DashboardPage from "./pages/DashboardPage";
 import ForgotPasswordPage from "./pages/ForgotPassword";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import UserDashboard from "./pages/UserDashboardPage";
 
 import LoadingSpinner from "./components/LoadingSpinner";
 
@@ -49,10 +50,7 @@ function App() {
   if (isCheckingAuth) return <LoadingSpinner />;
 
   return (
-    <div
-      className="min-h-screen bg-gradient-to-br
-    from-purple-900 via-blue-700 to-pink-600 flex items-center justify-center relative overflow-hidden"
-    >
+    <div className="min-h-screen bg-gradient-to-br from-[#2a0e3f] via-[#3b1a5b] to-[#512c78] flex items-center justify-center relative overflow-hidden">
       <FloatingShape
         color="bg-pink-400"
         size="w-64 h-64"
@@ -76,6 +74,8 @@ function App() {
       />
 
       <Routes>
+        <Route path="/profile/:id" element={<UserDashboard />} />
+
         {/* Protected routes for authenticated users */}
         <Route
           path="/"
