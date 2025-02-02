@@ -48,26 +48,26 @@ export const updateProfile = async (req, res) => {
 
 // Get Profile by User ID
 export const getProfile = async (req, res) => {
+  const { id } = req.params;
+
+  console.log("🔹 Fetching profile for ID:", id);
+
   try {
-    const { id } = req.params;
+    const profile = await User.findById(id).select("-password");
 
-    if (!id || id.length !== 24) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid user ID" });
-    }
-
-    const profile = await Profile.findOne({ user: id });
     if (!profile) {
+      console.warn("🔸 Profile not found for ID:", id);
       return res
         .status(404)
         .json({ success: false, message: "Profile not found" });
     }
 
+    console.log("🔹 Profile fetched successfully:", profile);
+
     res.status(200).json({ success: true, profile });
   } catch (error) {
-    console.error("Error in getProfile:", error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    console.error("🔸 Error fetching profile:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
