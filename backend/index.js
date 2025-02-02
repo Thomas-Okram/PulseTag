@@ -22,14 +22,26 @@ const __dirname = path.resolve();
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",
-      "https://pulsetag-technologies.onrender.com",
+      "http://localhost:5173", // Development frontend
+      "https://pulsetag-technologies.onrender.com", // Production frontend
     ],
-    credentials: true, // Allow cookies in cross-origin requests
+    credentials: true, // Allow sending cookies in cross-origin requests
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   })
 );
+
+// Handle CORS preflight requests explicitly
+app.options("*", cors());
+
+// Debugging Middleware for Logging Requests
+app.use((req, res, next) => {
+  console.log("🔹 Request Method:", req.method);
+  console.log("🔹 Request Origin:", req.headers.origin);
+  console.log("🔹 Request Path:", req.path);
+  console.log("🔹 Request Headers:", req.headers);
+  next();
+});
 
 // Middleware for parsing JSON and cookies
 app.use(express.json());
@@ -57,5 +69,5 @@ if (process.env.NODE_ENV === "production") {
 // Connect to the database and start the server
 app.listen(PORT, () => {
   connectDB();
-  console.log("✅ Server is running on port: ", PORT);
+  console.log("✅ Server is running on port:", PORT);
 });
