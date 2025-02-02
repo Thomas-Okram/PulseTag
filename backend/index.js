@@ -18,34 +18,23 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
 
-// Middleware to handle requests and dynamically allow CORS for trusted origins
-app.use((req, res, next) => {
-  const allowedOrigins = [
-    "http://localhost:5173", // Development frontend
-    "https://pulsetag-technologies.onrender.com", // Production frontend
-  ];
+// CORS Middleware
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173", // Development frontend
+      "https://pulsetag-technologies.onrender.com", // Production frontend
+    ],
+    credentials: true, // Allow sending cookies in cross-origin requests
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  })
+);
 
-  const origin = req.headers.origin || "";
+// Handle CORS preflight requests explicitly
+app.options("*", cors());
 
-  if (!origin || allowedOrigins.includes(origin)) {
-    res.header("Access-Control-Allow-Origin", origin || "*");
-    res.header("Access-Control-Allow-Credentials", "true");
-    res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-    res.header(
-      "Access-Control-Allow-Headers",
-      "Content-Type, Authorization, X-Requested-With"
-    );
-  }
-
-  // Handle OPTIONS preflight requests
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-
-  next();
-});
-
-// Debugging Middleware to log all incoming requests
+// Debugging Middleware for Logging Requests
 app.use((req, res, next) => {
   console.log("🔹 Request Method:", req.method);
   console.log("🔹 Request Origin:", req.headers.origin);
@@ -58,7 +47,7 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(cookieParser());
 
-// Define API routes
+// Define routes
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/analytics", analyticsRoutes);
