@@ -60,14 +60,10 @@ const UserDashboard = () => {
 
     try {
       const token = user?.token;
-      console.log("Token in API call:", token);
       const response = await axios.get(`${API_BASE_URL}/api/profile/${id}`, {
         headers: isAuthenticated
           ? { Authorization: `Bearer ${user.token}` } // Only send the token if logged in
           : undefined,
-      });
-      console.log("Headers:", {
-        Authorization: `Bearer ${user.token}`,
       });
 
       if (response.data.success) {
@@ -98,7 +94,7 @@ const UserDashboard = () => {
 
   useEffect(() => {
     fetchProfile();
-  }, [fetchProfile, user, isAuthenticated]);
+  }, [fetchProfile]);
 
   /**
    * Handle input changes
@@ -299,10 +295,6 @@ END:VCARD
   }
 
   const isOwner = isAuthenticated && (!profileId || user?._id === profileId);
-
-  console.log("Profile ID from URL:", profileId);
-  console.log("Logged-in User ID:", user?._id);
-  console.log("Is Owner:", isOwner);
 
   if (!profile && !loading) {
     return (
@@ -606,6 +598,31 @@ END:VCARD
                     >
                       Generate vCard
                     </button>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Bio
+                    </label>
+                    <textarea
+                      name="bio"
+                      value={formData.bio}
+                      onChange={handleInputChange}
+                      className="w-full p-2 border border-gray-600 rounded-lg"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Location
+                    </label>
+                    <input
+                      type="text"
+                      name="location"
+                      value={formData.location}
+                      onChange={handleInputChange}
+                      className="w-full p-2 border border-gray-600 rounded-lg"
+                    />
                   </div>
                 </div>
 

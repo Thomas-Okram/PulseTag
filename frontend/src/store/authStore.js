@@ -10,19 +10,26 @@ const API_URL =
 // Configure Axios to include credentials (cookies)
 axios.defaults.withCredentials = true;
 
-// Helper function to set Authorization header
-const setAuthToken = (token) => {
+// Helper to persist token in localStorage
+const persistToken = (token) => {
   if (token) {
+    localStorage.setItem("authToken", token);
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   } else {
+    localStorage.removeItem("authToken");
     delete axios.defaults.headers.common["Authorization"];
   }
 };
 
-// Store to manage authentication state
+// Restore token from localStorage on page reload
+const storedToken = localStorage.getItem("authToken");
+if (storedToken) {
+  axios.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
+}
+
 export const useAuthStore = create((set) => ({
   user: null,
-  isAuthenticated: false,
+  isAuthenticated: !!storedToken,
   isCheckingAuth: true,
   error: null,
   isLoading: false,
@@ -31,12 +38,18 @@ export const useAuthStore = create((set) => ({
   // Helper to set the user and token
   setUser: (user, token) => {
     if (token) {
-      setAuthToken(token);
+      persistToken(token);
+      set({
+        user: { ...user, token },
+        isAuthenticated: true,
+      });
+    } else {
+      persistToken(null);
+      set({
+        user: null,
+        isAuthenticated: false,
+      });
     }
-    set({
-      user,
-      isAuthenticated: !!user,
-    });
   },
 
   /**
@@ -51,19 +64,16 @@ export const useAuthStore = create((set) => ({
         name,
       });
 
-      console.log("Signup response:", response.data);
-
       const { user, token } = response.data;
 
       if (token) {
-        setAuthToken(token);
+        persistToken(token);
         set({
           user: { ...user, token },
           isAuthenticated: true,
           isLoading: false,
         });
       } else {
-        console.error("Token missing in signup response");
         throw new Error("Signup failed: Token missing");
       }
     } catch (error) {
@@ -87,19 +97,16 @@ export const useAuthStore = create((set) => ({
         password,
       });
 
-      console.log("Login response:", response.data);
-
       const { user, token } = response.data;
 
       if (token) {
-        setAuthToken(token);
+        persistToken(token);
         set({
           user: { ...user, token },
           isAuthenticated: true,
           isLoading: false,
         });
       } else {
-        console.error("Token missing in login response");
         throw new Error("Login failed: Token missing");
       }
     } catch (error) {
@@ -119,14 +126,12 @@ export const useAuthStore = create((set) => ({
     set({ isLoading: true, error: null });
     try {
       await axios.post(`${API_URL}/logout`);
+      persistToken(null);
       set({
         user: null,
         isAuthenticated: false,
         isLoading: false,
       });
-
-      // Remove the Authorization header on logout
-      setAuthToken(null);
     } catch (error) {
       console.error("Logout error:", error);
       set({ error: "Error logging out", isLoading: false });
@@ -142,12 +147,10 @@ export const useAuthStore = create((set) => ({
     try {
       const response = await axios.post(`${API_URL}/verify-email`, { code });
 
-      console.log("Verify email response:", response.data);
-
       const { user, token } = response.data;
 
       if (token) {
-        setAuthToken(token);
+        persistToken(token);
         set({
           user: { ...user, token },
           isAuthenticated: true,
@@ -155,7 +158,6 @@ export const useAuthStore = create((set) => ({
         });
       } else {
         console.error("Token missing in email verification response");
-        throw new Error("Verification failed: Token missing");
       }
     } catch (error) {
       console.error("Verify email error:", error);
@@ -175,20 +177,17 @@ export const useAuthStore = create((set) => ({
     try {
       const response = await axios.get(`${API_URL}/check-auth`);
 
-      console.log("Check auth response:", response.data);
-
       const { user, token } = response.data;
 
-      if (token) {
-        setAuthToken(token);
+      if (user && token) {
+        persistToken(token);
         set({
           user: { ...user, token },
           isAuthenticated: true,
           isCheckingAuth: false,
         });
       } else {
-        console.error("Token missing in check auth response");
-        throw new Error("Auth check failed: Token missing");
+        throw new Error("Check auth failed: User or token missing");
       }
     } catch (error) {
       console.error("Check auth error:", error);
@@ -209,8 +208,6 @@ export const useAuthStore = create((set) => ({
       const response = await axios.post(`${API_URL}/forgot-password`, {
         email,
       });
-
-      console.log("Forgot password response:", response.data);
 
       set({ message: response.data.message, isLoading: false });
     } catch (error) {
