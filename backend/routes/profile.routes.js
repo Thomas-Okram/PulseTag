@@ -11,8 +11,12 @@ const router = express.Router();
 // Public route to fetch profile by user ID
 router.get("/:id", async (req, res, next) => {
   console.log("🔹 Profile Route Hit - GET /api/profile/:id");
+  console.log("🔹 Request Params:", req.params);
+  console.log("🔹 Request Headers:", req.headers);
+
   try {
-    await getProfile(req, res); // Call the controller to fetch profile
+    // Call the controller to fetch the profile
+    await getProfile(req, res);
   } catch (error) {
     console.error("Error in profile route:", error);
     res.status(500).json({ success: false, message: "Internal Server Error" });

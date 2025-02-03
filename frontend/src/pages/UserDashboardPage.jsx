@@ -22,7 +22,7 @@ import {
 } from "react-icons/ai";
 
 const API_BASE_URL =
-  import.meta.env.MODE === "development"
+  import.meta.env.VITE_API_BASE_URL === "development"
     ? "http://localhost:7000"
     : "https://pulsetag-technologies.onrender.com";
 
@@ -55,15 +55,12 @@ const UserDashboard = () => {
   const { id: profileId } = useParams();
 
   const fetchProfile = useCallback(async () => {
-    const id = profileId || user._id;
+    const id = profileId || user?._id;
     setLoading(true);
 
     try {
-      const token = user?.token;
       const response = await axios.get(`${API_BASE_URL}/api/profile/${id}`, {
-        headers: isAuthenticated
-          ? { Authorization: `Bearer ${user.token}` } // Only send the token if logged in
-          : undefined,
+        headers: user?.token ? { Authorization: `Bearer ${user.token}` } : {},
       });
 
       if (response.data.success) {
@@ -294,7 +291,7 @@ END:VCARD
     return <p className="text-center text-white mt-10">Loading profile...</p>;
   }
 
-  const isOwner = isAuthenticated && (!profileId || user?._id === profileId);
+  const isOwner = isAuthenticated && profileId === user?._id;
 
   if (!profile && !loading) {
     return (
@@ -307,7 +304,7 @@ END:VCARD
       <div className="max-w-3xl bg-gray-800 rounded-lg shadow-lg p-8 w-full">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold">User Dashboard</h2>
-          {isOwner && (
+          {isAuthenticated && isOwner && (
             <button
               onClick={logout}
               className="bg-red-600 px-4 py-2 rounded-lg"
@@ -485,7 +482,7 @@ END:VCARD
               </div>
             )}
 
-            {isOwner && (
+            {isAuthenticated && isOwner && (
               <button
                 onClick={() => setEditing(true)}
                 className="bg-yellow-600 px-4 py-2 mt-8 rounded-lg mx-auto block"
