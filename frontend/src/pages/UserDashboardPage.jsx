@@ -60,7 +60,9 @@ const UserDashboard = () => {
 
     try {
       const response = await axios.get(`${API_BASE_URL}/api/profile/${id}`, {
-        headers: user?.token ? { Authorization: `Bearer ${user.token}` } : {},
+        headers: isAuthenticated
+          ? { Authorization: `Bearer ${user.token}` }
+          : undefined,
       });
 
       if (response.data.success) {
@@ -82,6 +84,12 @@ const UserDashboard = () => {
         setProfileImagePreview(profileData.profilePicture || null);
       }
     } catch (error) {
+      if (error.response && error.response.status === 404) {
+        // Handle profile not found case
+        alert("Profile not found. Please complete your profile setup.");
+      } else {
+        alert("Failed to fetch profile. Please try again.");
+      }
       console.error("Error fetching profile:", error);
       alert("Failed to fetch profile.");
     } finally {
@@ -291,7 +299,7 @@ END:VCARD
     return <p className="text-center text-white mt-10">Loading profile...</p>;
   }
 
-  const isOwner = isAuthenticated && profileId === user?._id;
+  const isOwner = isAuthenticated && user?._id === profile?.user;
 
   if (!profile && !loading) {
     return (

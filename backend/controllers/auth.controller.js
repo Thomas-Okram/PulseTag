@@ -1,3 +1,5 @@
+import { Profile } from "../models/profile.model.js"; // Import the Profile model
+
 import bcryptjs from "bcryptjs";
 import crypto from "crypto";
 
@@ -40,6 +42,15 @@ export const signup = async (req, res) => {
     });
 
     await user.save();
+
+    // Create a profile for the user
+    const profile = new Profile({
+      user: user._id,
+      name: user.name,
+      email: user.email,
+    });
+
+    await profile.save();
 
     const token = generateTokenAndSetCookie(res, user._id);
 
