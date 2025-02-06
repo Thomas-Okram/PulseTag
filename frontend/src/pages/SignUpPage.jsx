@@ -10,6 +10,7 @@ const SignUpPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
 
   const { signup, error, isLoading } = useAuthStore();
@@ -18,12 +19,14 @@ const SignUpPage = () => {
     e.preventDefault();
 
     try {
-      await signup(email, password, name);
-      navigate("/verify-email");
+      const message = await signup(email, password, name); // Wait for signup completion
+      setSuccessMessage(message || "Signup successful. Redirecting...");
+      setTimeout(() => navigate("/verify-email"), 2000); // Navigate with a slight delay
     } catch (error) {
-      console.log(error);
+      console.error("Signup failed:", error);
     }
   };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -61,6 +64,12 @@ const SignUpPage = () => {
           {error && <p className="text-red-500 font-semibold mt-2">{error}</p>}
           <PasswordStrengthMeter password={password} />
 
+          {successMessage && (
+            <p className="text-green-500 font-semibold mt-2">
+              {successMessage}
+            </p>
+          )}
+
           <motion.button
             className="mt-5 w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-bold rounded-lg shadow-lg hover:from-blue-600 hover:to-indigo-600 focus:outline-none focus:ring-4 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-700 transition duration-200"
             whileHover={{ scale: 1.05 }}
@@ -69,7 +78,7 @@ const SignUpPage = () => {
             disabled={isLoading}
           >
             {isLoading ? (
-              <Loader className=" animate-spin mx-auto" size={24} />
+              <Loader className="animate-spin mx-auto" size={24} />
             ) : (
               "Sign Up"
             )}
@@ -87,4 +96,5 @@ const SignUpPage = () => {
     </motion.div>
   );
 };
+
 export default SignUpPage;

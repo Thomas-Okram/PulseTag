@@ -308,14 +308,18 @@ END:VCARD
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
-      <div className="max-w-3xl bg-gray-800 rounded-lg shadow-lg p-8 w-full">
+    <div className="w-full min-h-screen bg-gradient-to-br from-[#1e293b] via-[#334155] to-[#0f172a] text-white flex items-center justify-center relative overflow-hidden">
+      {/* Floating Decorative Shapes */}
+      <div className="absolute top-[-10%] left-[15%] w-72 h-72 bg-blue-400/20 rounded-full blur-[80px] opacity-40 animate-floating" />
+      <div className="absolute top-[70%] right-[10%] w-64 h-64 bg-pink-500/20 rounded-full blur-[80px] opacity-40 animate-floating delay-3000" />
+      <div className="absolute bottom-[5%] left-[-10%] w-56 h-56 bg-indigo-500/20 rounded-full blur-[80px] opacity-40 animate-floating delay-5000" />
+      <div className="w-full max-w-screen-xl mx-auto bg-gray-700/30 backdrop-blur-lg rounded-2xl shadow-2xl p-10 border border-gray-400">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold">User Dashboard</h2>
           {isAuthenticated && isOwner && (
             <button
               onClick={logout}
-              className="bg-red-600 px-4 py-2 rounded-lg"
+              className="bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700 shadow-lg"
             >
               Logout
             </button>
@@ -493,240 +497,242 @@ END:VCARD
             {isAuthenticated && isOwner && (
               <button
                 onClick={() => setEditing(true)}
-                className="bg-yellow-600 px-4 py-2 mt-8 rounded-lg mx-auto block"
+                className="bg-yellow-600 px-4 py-2 mt-8 rounded-lg mx-auto block hover:bg-yellow-500 shadow-lg"
               >
                 Edit Profile
               </button>
             )}
           </>
         )}
+      </div>
 
-        {/* Edit Profile Modal */}
-        {editing && (
-          <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-gray-800 rounded-lg w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]">
-              <h3 className="text-2xl font-semibold p-4 bg-gray-700 text-center text-white">
-                Edit Profile
-              </h3>
-              <div className="overflow-y-auto p-6 flex-1 space-y-6">
-                {/* Profile Picture */}
-                <div className="text-center relative">
-                  <label className="block mb-2 text-sm font-medium">
-                    Profile Picture
-                  </label>
-                  <div className="relative w-32 h-32 rounded-full border-4 border-indigo-500 mx-auto flex items-center justify-center overflow-hidden bg-gray-700">
-                    {profileImagePreview ? (
-                      <img
-                        src={profileImagePreview}
-                        alt="Profile Preview"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <FaUserCircle className="text-gray-400 text-8xl" />
-                    )}
-                    <button
-                      onClick={() =>
-                        document.getElementById("profilePictureInput").click()
-                      }
-                      className="absolute bottom-2 bg-yellow-600 text-white p-2 rounded-full hover:bg-yellow-500"
-                      title="Edit Profile Picture"
-                    >
-                      <FaEdit className="text-sm" />
-                    </button>
-                    <input
-                      id="profilePictureInput"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
+      {/* Edit Profile Modal */}
+      {editing && (
+        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+          <div className="bg-gray-700/30 backdrop-blur-lg rounded-2xl shadow-2xl w-full max-w-4xl p-6 border border-gray-400 overflow-y-auto max-h-[90vh]">
+            <h3 className="text-2xl font-semibold p-4 bg-gray-800 rounded-t-2xl text-center text-white">
+              Edit Profile
+            </h3>
+            <div className="overflow-y-auto p-6 flex-1 space-y-6">
+              {/* Profile Picture */}
+              <div className="text-center relative">
+                <label className="block mb-2 text-sm font-medium text-gray-200">
+                  Profile Picture
+                </label>
+                <div className="relative w-32 h-32 rounded-full border-4 border-indigo-500 mx-auto flex items-center justify-center overflow-hidden bg-gray-700/30 backdrop-blur-lg shadow-lg">
+                  {profileImagePreview ? (
+                    <img
+                      src={profileImagePreview}
+                      alt="Profile Preview"
+                      className="w-full h-full object-cover"
                     />
-                  </div>
+                  ) : (
+                    <FaUserCircle className="text-gray-400 text-8xl" />
+                  )}
+                  <button
+                    onClick={() =>
+                      document.getElementById("profilePictureInput").click()
+                    }
+                    className="absolute bottom-2 bg-yellow-600 text-white p-2 rounded-full hover:bg-yellow-500"
+                    title="Edit Profile Picture"
+                  >
+                    <FaEdit className="text-sm" />
+                  </button>
+                  <input
+                    id="profilePictureInput"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
                 </div>
+              </div>
 
-                {/* Contact Details */}
-                <div>
-                  <h4 className="text-lg font-semibold mb-4">
-                    Contact Details
-                  </h4>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        Call Now (Mobile/Landline)
-                      </label>
-                      <input
-                        type="text"
-                        name="callNow"
-                        value={formData.callNow}
-                        onChange={handleInputChange}
-                        className="w-full p-2 border border-gray-600 rounded-lg"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        WhatsApp
-                      </label>
-                      <input
-                        type="text"
-                        name="whatsapp"
-                        value={formData.whatsapp}
-                        onChange={handleInputChange}
-                        className="w-full p-2 border border-gray-600 rounded-lg"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        SMS
-                      </label>
-                      <input
-                        type="text"
-                        name="sms"
-                        value={formData.sms}
-                        onChange={handleInputChange}
-                        className="w-full p-2 border border-gray-600 rounded-lg"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        className="w-full p-2 border border-gray-600 rounded-lg"
-                      />
-                    </div>
-                    <button
-                      onClick={generateVCard}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-500"
-                    >
-                      Generate vCard
-                    </button>
-                  </div>
-
+              {/* Contact Details */}
+              <div>
+                <h4 className="text-lg font-semibold mb-4 text-gray-200">
+                  Contact Details
+                </h4>
+                <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Bio
-                    </label>
-                    <textarea
-                      name="bio"
-                      value={formData.bio}
-                      onChange={handleInputChange}
-                      className="w-full p-2 border border-gray-600 rounded-lg"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Location
+                    <label className="block text-sm font-medium mb-1 text-gray-300">
+                      Call Now (Mobile/Landline)
                     </label>
                     <input
                       type="text"
-                      name="location"
-                      value={formData.location}
+                      name="callNow"
+                      value={formData.callNow}
                       onChange={handleInputChange}
-                      className="w-full p-2 border border-gray-600 rounded-lg"
+                      className="w-full p-2 border border-gray-600 rounded-lg bg-gray-800 text-white"
                     />
                   </div>
-                </div>
-
-                {/* Availability */}
-                <div>
-                  <h4 className="text-lg font-semibold mb-4">Availability</h4>
                   <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Custom Availability Note
+                    <label className="block text-sm font-medium mb-1 text-gray-300">
+                      WhatsApp
                     </label>
-                    <textarea
-                      name="availabilityNote"
-                      value={formData.availabilityNote}
+                    <input
+                      type="text"
+                      name="whatsapp"
+                      value={formData.whatsapp}
                       onChange={handleInputChange}
-                      className="w-full p-2 border border-gray-600 rounded-lg"
+                      className="w-full p-2 border border-gray-600 rounded-lg bg-gray-800 text-white"
                     />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-gray-300">
+                      SMS
+                    </label>
+                    <input
+                      type="text"
+                      name="sms"
+                      value={formData.sms}
+                      onChange={handleInputChange}
+                      className="w-full p-2 border border-gray-600 rounded-lg bg-gray-800 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-gray-300">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className="w-full p-2 border border-gray-600 rounded-lg bg-gray-800 text-white"
+                    />
+                  </div>
+                  <button
+                    onClick={generateVCard}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg mx-auto block hover:bg-blue-500 shadow-lg"
+                  >
+                    Generate vCard
+                  </button>
                 </div>
 
-                {/* Social Links Edit Section */}
                 <div>
-                  <h4 className="text-lg font-semibold mb-4">Social Links</h4>
-                  {platforms.map(({ platform, icon, label }) => {
-                    const existingLink = formData.socialLinks.find(
-                      (link) => link.platform === platform
-                    ) || {
-                      platform,
-                      url: "",
-                      customCTA: "",
-                    };
+                  <label className="block text-sm font-medium mb-1 text-gray-300">
+                    Bio
+                  </label>
+                  <textarea
+                    name="bio"
+                    value={formData.bio}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border border-gray-600 rounded-lg bg-gray-800 text-white"
+                  />
+                </div>
 
-                    return (
-                      <div
-                        key={platform}
-                        className="flex items-center space-x-4 mb-4"
-                      >
-                        {/* Icon */}
-                        <div className="flex items-center justify-center w-10 h-10 bg-gray-700 rounded-lg">
-                          {icon}
-                        </div>
-
-                        {/* Platform Name Display (Read-only) */}
-                        <p className="w-28 text-gray-300 font-medium">
-                          {label}
-                        </p>
-
-                        {/* URL Input */}
-                        <input
-                          type="text"
-                          placeholder="Enter URL"
-                          value={existingLink.url}
-                          onChange={(e) =>
-                            handleSocialLinkChange(
-                              platform,
-                              "url",
-                              e.target.value
-                            )
-                          }
-                          className="flex-1 p-2 border border-gray-600 rounded-lg"
-                        />
-
-                        {/* Custom CTA Input */}
-                        <input
-                          type="text"
-                          placeholder="Enter Custom CTA (e.g., Follow me)"
-                          value={existingLink.customCTA}
-                          onChange={(e) =>
-                            handleSocialLinkChange(
-                              platform,
-                              "customCTA",
-                              e.target.value
-                            )
-                          }
-                          className="flex-2 p-2 border border-gray-600 rounded-lg"
-                        />
-                      </div>
-                    );
-                  })}
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-300">
+                    Location
+                  </label>
+                  <input
+                    type="text"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border border-gray-600 rounded-lg bg-gray-800 text-white"
+                  />
                 </div>
               </div>
 
-              <div className="p-4 flex justify-between bg-gray-700">
-                <button
-                  onClick={saveProfile}
-                  className="bg-green-600 text-white px-4 py-2 rounded-lg"
-                >
-                  Save Changes
-                </button>
-                <button
-                  onClick={() => setEditing(false)}
-                  className="bg-red-600 text-white px-4 py-2 rounded-lg"
-                >
-                  Cancel
-                </button>
+              {/* Availability */}
+              <div>
+                <h4 className="text-lg font-semibold mb-4 text-gray-200">
+                  Availability
+                </h4>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-300">
+                    Custom Availability Note
+                  </label>
+                  <textarea
+                    name="availabilityNote"
+                    value={formData.availabilityNote}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border border-gray-600 rounded-lg bg-gray-800 text-white"
+                  />
+                </div>
+              </div>
+
+              {/* Social Links Edit Section */}
+              <div>
+                <h4 className="text-lg font-semibold mb-4 text-gray-200">
+                  Social Links
+                </h4>
+                {platforms.map(({ platform, icon, label }) => {
+                  const existingLink = formData.socialLinks.find(
+                    (link) => link.platform === platform
+                  ) || {
+                    platform,
+                    url: "",
+                    customCTA: "",
+                  };
+
+                  return (
+                    <div
+                      key={platform}
+                      className="flex items-center space-x-4 mb-4"
+                    >
+                      {/* Icon */}
+                      <div className="flex items-center justify-center w-10 h-10 bg-gray-700/30 backdrop-blur-lg rounded-lg">
+                        {icon}
+                      </div>
+
+                      {/* Platform Name Display (Read-only) */}
+                      <p className="w-28 text-gray-300 font-medium">{label}</p>
+
+                      {/* URL Input */}
+                      <input
+                        type="text"
+                        placeholder="Enter URL"
+                        value={existingLink.url}
+                        onChange={(e) =>
+                          handleSocialLinkChange(
+                            platform,
+                            "url",
+                            e.target.value
+                          )
+                        }
+                        className="flex-1 p-2 border border-gray-600 rounded-lg bg-gray-800 text-white"
+                      />
+
+                      {/* Custom CTA Input */}
+                      <input
+                        type="text"
+                        placeholder="Enter Custom CTA (e.g., Follow me)"
+                        value={existingLink.customCTA}
+                        onChange={(e) =>
+                          handleSocialLinkChange(
+                            platform,
+                            "customCTA",
+                            e.target.value
+                          )
+                        }
+                        className="flex-2 p-2 border border-gray-600 rounded-lg bg-gray-800 text-white"
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
+
+            <div className="p-4 flex justify-between bg-gray-800 rounded-b-2xl">
+              <button
+                onClick={saveProfile}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-500"
+              >
+                Save Changes
+              </button>
+              <button
+                onClick={() => setEditing(false)}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-500"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

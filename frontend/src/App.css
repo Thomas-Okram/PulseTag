@@ -1,23 +1,33 @@
+/* Root Container */
 #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  font-family: "Inter", sans-serif;
+  background: linear-gradient(135deg, #1e293b, #334155);
+  color: #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
+/* Logo Styles */
 .logo {
   height: 6em;
   padding: 1.5em;
   will-change: filter;
-  transition: filter 300ms;
+  transition: filter 300ms, transform 300ms;
+  display: inline-block;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+  filter: drop-shadow(0 0 2em #38bdf8aa);
+  transform: scale(1.1);
 }
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
+/* Logo Spin Animation */
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
@@ -33,10 +43,137 @@
   }
 }
 
+/* Card Component */
 .card {
-  padding: 2em;
+  padding: 2rem;
+  background: rgba(51, 65, 85, 0.7);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  transition: transform 300ms, box-shadow 300ms;
+}
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
 }
 
+/* Header Styles */
+.header {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 1.5rem;
+}
+
+/* Input Field */
+.input-field {
+  padding: 0.75rem;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #475569;
+  background: #1e293b;
+  color: #f8fafc;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  transition: border-color 200ms;
+}
+
+.input-field:focus {
+  border-color: #38bdf8;
+  outline: none;
+}
+
+/* Button Styles */
+.button {
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  border-radius: 8px;
+  color: #ffffff;
+  transition: background-color 300ms, transform 200ms;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.button-primary {
+  background-color: #2563eb;
+}
+
+.button-primary:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-2px);
+}
+
+.button-danger {
+  background-color: #dc2626;
+}
+
+.button-danger:hover {
+  background-color: #b91c1c;
+}
+
+/* Table Styles */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+}
+
+.table th,
+.table td {
+  padding: 1rem;
+  border-bottom: 1px solid #475569;
+  text-align: left;
+}
+
+.table th {
+  background: #475569;
+  color: #f1f5f9;
+  font-weight: 600;
+}
+
+.table td {
+  color: #cbd5e1;
+}
+
+/* Read the Docs Text */
 .read-the-docs {
-  color: #888;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+/* Floating Shape Styling */
+.floating-shape {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.3;
+  mix-blend-mode: overlay;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  #root {
+    padding: 1.5rem;
+  }
+
+  .logo {
+    height: 4.5em;
+  }
+
+  .card {
+    padding: 1.5rem;
+  }
+}
+
+@keyframes floating {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+.animate-floating {
+  animation: floating 6s ease-in-out infinite;
 }

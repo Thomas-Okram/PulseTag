@@ -64,7 +64,7 @@ export const useAuthStore = create((set) => ({
         name,
       });
 
-      const { user, token } = response.data;
+      const { user, token, message } = response.data;
 
       if (token) {
         persistToken(token);
@@ -73,16 +73,16 @@ export const useAuthStore = create((set) => ({
           isAuthenticated: true,
           isLoading: false,
         });
-      } else {
-        throw new Error("Signup failed: Token missing");
       }
+
+      return message || "Signup successful. Please verify your email."; // Return success message
     } catch (error) {
       console.error("Signup error:", error);
       set({
         error: error.response?.data?.message || "Error signing up",
         isLoading: false,
       });
-      throw error;
+      throw error; // Rethrow for the caller to handle
     }
   },
 

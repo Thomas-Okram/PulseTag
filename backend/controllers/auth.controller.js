@@ -1,4 +1,5 @@
 import { Profile } from "../models/profile.model.js"; // Import the Profile model
+import { PendingVerification } from "../models/pendingVerification.model.js";
 
 import bcryptjs from "bcryptjs";
 import crypto from "crypto";
@@ -16,51 +17,54 @@ export const signup = async (req, res) => {
   const { email, password, name } = req.body;
 
   try {
+    // Validate input
     if (!email || !password || !name) {
       throw new Error("All fields are required");
     }
 
+    // Check if a user already exists
     const userAlreadyExists = await User.findOne({ email });
-
     if (userAlreadyExists) {
       return res
         .status(400)
         .json({ success: false, message: "User already exists" });
     }
 
+    // Check if a pending verification already exists
+    const pendingVerificationExists = await PendingVerification.findOne({
+      email,
+    });
+    if (pendingVerificationExists) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Verification is already pending for this email",
+        });
+    }
+
+    // Hash the password and generate a verification token
     const hashedPassword = await bcryptjs.hash(password, 10);
     const verificationToken = Math.floor(
       100000 + Math.random() * 900000
     ).toString();
 
-    const user = new User({
+    // Save pending verification
+    await PendingVerification.create({
       email,
-      password: hashedPassword,
       name,
+      hashedPassword,
       verificationToken,
       verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
     });
 
-    await user.save();
-
-    // Create a profile for the user
-    const profile = new Profile({
-      user: user._id,
-      name: user.name,
-      email: user.email,
-    });
-
-    await profile.save();
-
-    const token = generateTokenAndSetCookie(res, user._id);
-
-    await sendVerificationEmail(user.email, verificationToken);
+    // Send verification email
+    await sendVerificationEmail(email, verificationToken);
 
     res.status(201).json({
       success: true,
-      message: "User created successfully",
-      user: { ...user._doc, password: undefined },
-      token,
+      message:
+        "Verification email sent. Please check your inbox to verify your email.",
     });
   } catch (error) {
     console.error("Error in signup:", error);
@@ -72,25 +76,45 @@ export const verifyEmail = async (req, res) => {
   const { code } = req.body;
 
   try {
-    const user = await User.findOne({
+    // Find the pending verification record
+    const pendingVerification = await PendingVerification.findOne({
       verificationToken: code,
       verificationTokenExpiresAt: { $gt: Date.now() },
     });
 
-    if (!user) {
+    if (!pendingVerification) {
       return res.status(400).json({
         success: false,
         message: "Invalid or expired verification code",
       });
     }
 
-    user.isVerified = true;
-    user.verificationToken = undefined;
-    user.verificationTokenExpiresAt = undefined;
+    // Create the user in the User collection
+    const user = new User({
+      email: pendingVerification.email,
+      name: pendingVerification.name,
+      password: pendingVerification.hashedPassword,
+      isVerified: true,
+    });
+
     await user.save();
 
+    // Create the user's profile
+    const profile = new Profile({
+      user: user._id,
+      name: user.name,
+      email: user.email,
+    });
+
+    await profile.save();
+
+    // Remove the pending verification entry
+    await PendingVerification.deleteOne({ email: pendingVerification.email });
+
+    // Send a welcome email
     await sendWelcomeEmail(user.email, user.name);
 
+    // Generate a token and set it as a cookie
     const token = generateTokenAndSetCookie(res, user._id);
 
     res.status(200).json({
