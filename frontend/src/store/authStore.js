@@ -5,7 +5,7 @@ import axios from "axios";
 const API_URL =
   import.meta.env.MODE === "development"
     ? "http://localhost:7000/api/auth"
-    : "https://pulsetag-technologies.onrender.com/api/auth";
+    : "https://pulsetagapp.com/api/auth";
 
 // Configure Axios to include credentials (cookies)
 axios.defaults.withCredentials = true;
