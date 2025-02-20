@@ -10,7 +10,7 @@ import { FaBox, FaTimesCircle, FaShoppingBag } from "react-icons/fa";
 const API_BASE_URL =
   import.meta.env.MODE === "development"
     ? "http://localhost:7000"
-    : "https://pulsetag-technologies.onrender.com";
+    : "https://pulsetagapp.com";
 
 export default function OrderPage() {
   const { orderId } = useParams();

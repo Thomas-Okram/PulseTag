@@ -24,7 +24,7 @@ const ResetPasswordPage = () => {
     setIsLoading(true);
     try {
       const response = await axios.post(
-        `https://pulsetag-technologies.onrender.com/api/auth/reset-password/${token}`,
+        `https://pulsetagapp.com/api/auth/reset-password/${token}`,
         { password },
         { withCredentials: true }
       );
