@@ -4,7 +4,7 @@ import { LogOut } from "lucide-react";
 import { useAuthStore } from "../store/authStore";
 
 export default function Navbar() {
-  const { logout } = useAuthStore();
+  const { logout, user } = useAuthStore(); // Get user data
 
   return (
     <nav className="backdrop-blur-lg bg-white/10 text-white border-b border-white/20 shadow-lg sticky top-0 z-50 p-4 flex justify-between items-center">
@@ -13,9 +13,14 @@ export default function Navbar() {
         <Link to="/" className="hover:text-blue-300 transition">
           Home
         </Link>
-        <Link to="/profile/:id" className="hover:text-blue-300 transition">
-          Profile
-        </Link>
+        {user?._id && ( // Ensure user is authenticated before linking
+          <Link
+            to={`/profile/${user._id}`}
+            className="hover:text-blue-300 transition"
+          >
+            Profile
+          </Link>
+        )}
         <Link to="/order" className="hover:text-blue-300 transition">
           Order
         </Link>

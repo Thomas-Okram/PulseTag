@@ -105,7 +105,10 @@ function App() {
       />
 
       <Routes>
-        {/* User Dashboard */}
+        {/* ✅ Profile Page Now Public */}
+        <Route path="/profile/:id" element={<ProfilePage />} />
+
+        {/* ✅ Authenticated User Dashboard */}
         <Route
           path="/"
           element={
@@ -186,14 +189,6 @@ function App() {
           element={
             <ProtectedRoute>
               <OrderPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile/:id"
-          element={
-            <ProtectedRoute>
-              <ProfilePage />
             </ProtectedRoute>
           }
         />
