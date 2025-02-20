@@ -3,13 +3,11 @@ import axios from "axios";
 import { useAuthStore } from "../store/authStore";
 import { QRCodeCanvas as QRCode } from "qrcode.react";
 import { motion } from "framer-motion";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 
 const API_BASE_URL =
   import.meta.env.MODE === "development"
     ? "http://localhost:7000"
-    : "https://pulsetag-technologies.onrender.com";
+    : "https://pulsetagapp.com";
 
 const AdminDashboard = () => {
   const { user, logout } = useAuthStore();
@@ -45,8 +43,8 @@ const AdminDashboard = () => {
     };
 
     try {
-      const method = action === "delete" ? "delete" : "put";
-      await axios({
+      let method = action === "delete" ? "delete" : "put";
+      const response = await axios({
         method,
         url: `${API_BASE_URL}${endpoints[action]}`,
         headers: { Authorization: `Bearer ${user.token}` },
@@ -77,21 +75,15 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-      {/* Navbar */}
-      <Navbar />
-
-      {/* Admin Dashboard Content */}
+    <div className="w-full flex flex-col items-center justify-center p-6 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-7xl mx-auto bg-white/10 backdrop-blur-lg rounded-3xl shadow-xl border border-white/20 p-10 sm:p-12 mt-10"
+        className="w-full max-w-7xl bg-white/10 backdrop-blur-md rounded-3xl shadow-lg border border-gray-200/10 p-6 sm:p-8"
       >
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
-          <h2 className="text-4xl font-extrabold text-white">
-            Admin Dashboard
-          </h2>
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+          <h2 className="text-3xl font-bold text-white">Admin Dashboard</h2>
           <button
             onClick={logout}
             className="bg-red-500 px-4 py-2 rounded-lg text-white hover:bg-red-600 transition-all shadow-md"
@@ -100,13 +92,12 @@ const AdminDashboard = () => {
           </button>
         </div>
 
-        {/* Search Input */}
         <input
           type="text"
           placeholder="Search users..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="p-4 w-full mb-8 border border-gray-500/40 rounded-lg bg-white/10 backdrop-blur-sm text-white placeholder-gray-300"
+          className="p-3 w-full mb-6 border border-gray-500/40 rounded-lg bg-white/10 backdrop-blur-sm text-white placeholder-gray-300"
         />
 
         {loading ? (
@@ -118,14 +109,14 @@ const AdminDashboard = () => {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-gray-700/40">
-                    <th className="p-4 text-gray-300">#</th>
-                    <th className="p-4 text-gray-300">Name</th>
-                    <th className="p-4 text-gray-300">Email</th>
-                    <th className="p-4 text-gray-300">Role</th>
-                    <th className="p-4 text-gray-300">Status</th>
-                    <th className="p-4 text-gray-300">Profile Link</th>
-                    <th className="p-4 text-gray-300">QR Code</th>
-                    <th className="p-4 text-gray-300">Actions</th>
+                    <th className="p-3 text-gray-300">#</th>
+                    <th className="p-3 text-gray-300">Name</th>
+                    <th className="p-3 text-gray-300">Email</th>
+                    <th className="p-3 text-gray-300">Role</th>
+                    <th className="p-3 text-gray-300">Status</th>
+                    <th className="p-3 text-gray-300">Profile Link</th>
+                    <th className="p-3 text-gray-300">QR Code</th>
+                    <th className="p-3 text-gray-300">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -134,11 +125,11 @@ const AdminDashboard = () => {
                       key={u._id}
                       className="border-b border-gray-700/20 hover:bg-white/5 transition-all"
                     >
-                      <td className="p-4 text-white">{index + 1}</td>
-                      <td className="p-4 text-white">{u.name}</td>
-                      <td className="p-4 text-white">{u.email}</td>
-                      <td className="p-4 text-white">{u.role}</td>
-                      <td className="p-4">
+                      <td className="p-3 text-white">{index + 1}</td>
+                      <td className="p-3 text-white">{u.name}</td>
+                      <td className="p-3 text-white">{u.email}</td>
+                      <td className="p-3 text-white">{u.role}</td>
+                      <td className="p-3">
                         <span
                           className={`px-2 py-1 rounded-md ${
                             u.isActive
@@ -149,7 +140,7 @@ const AdminDashboard = () => {
                           {u.isActive ? "Active" : "Deactivated"}
                         </span>
                       </td>
-                      <td className="p-4">
+                      <td className="p-3">
                         <a
                           href={`${API_BASE_URL}/profile/${u._id}`}
                           target="_blank"
@@ -159,7 +150,7 @@ const AdminDashboard = () => {
                           View Profile
                         </a>
                       </td>
-                      <td className="p-4">
+                      <td className="p-3">
                         <div className="flex flex-col items-center">
                           <QRCode
                             id={`qr-code-${u._id}`}
@@ -174,8 +165,7 @@ const AdminDashboard = () => {
                           </button>
                         </div>
                       </td>
-                      <td className="p-4 flex flex-wrap gap-2">
-                        {/* Admin Actions */}
+                      <td className="p-3 flex flex-wrap gap-2">
                         {u.role === "admin" ? (
                           <button
                             onClick={() =>
@@ -317,7 +307,6 @@ const AdminDashboard = () => {
           </div>
         )}
       </motion.div>
-      <Footer />
     </div>
   );
 };
