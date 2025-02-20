@@ -33,15 +33,15 @@ connectDB()
       cors({
         origin: [
           "http://localhost:5173", // Development frontend
-          "https://pulsetag-technologies.onrender.com", // Production frontend
+          "https://pulsetagapp.com", // ✅ Removed trailing slash
         ],
-        credentials: true,
+        credentials: true, // ✅ Ensures cookies and auth headers work
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
       })
     );
 
-    // ✅ Handle CORS Preflight Requests Explicitly
+    // ✅ Explicitly handle preflight CORS requests
     app.options("*", cors());
 
     // ✅ Debugging Middleware for Logging Requests
