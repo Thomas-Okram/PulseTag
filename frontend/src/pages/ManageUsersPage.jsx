@@ -5,11 +5,10 @@ import { QRCodeCanvas as QRCode } from "qrcode.react";
 import { motion } from "framer-motion";
 
 const API_BASE_URL =
-  import.meta.env.MODE === "development"
-    ? "http://localhost:7000"
-    : "https://pulsetagapp.com";
+  import.meta.env.VITE_API_BASE_URL || "https://pulsetagapp.com";
+console.log("🔹 API Base URL:", API_BASE_URL);
 
-const AdminDashboard = () => {
+const ManageUsersPage = () => {
   const { user, logout } = useAuthStore();
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
@@ -311,4 +310,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default ManageUsersPage;
